@@ -1,0 +1,87 @@
+.gallery {
+  padding: var(--section-padding-y) 0 var(--section-padding-y) var(--section-padding-x);
+  background-color: var(--bg-primary);
+  overflow: hidden;
+}
+
+.header {
+  max-width: var(--max-width);
+  margin: 0 auto var(--space-lg);
+  padding-right: var(--section-padding-x);
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--text-primary);
+}
+
+.scrollContainer {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) var(--bg-secondary);
+  padding-bottom: var(--space-md);
+  overscroll-behavior-x: contain;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scrollContainer {
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: var(--section-padding-x);
+  }
+
+  .slide {
+    scroll-snap-align: start;
+  }
+}
+
+.scrollContainer:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.track {
+  display: flex;
+  gap: var(--space-md);
+  width: max-content;
+  padding-right: var(--section-padding-x);
+}
+
+.slide {
+  flex-shrink: 0;
+}
+
+.mediaFrame {
+  width: min(260px, calc(100vw - var(--section-padding-x) * 2 - var(--space-md)));
+  aspect-ratio: 3 / 4;
+  background-color: var(--bg-secondary);
+  overflow: hidden;
+}
+
+.media {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (min-width: 375px) {
+  .mediaFrame {
+    width: 280px;
+  }
+}
+
+@media (min-width: 414px) {
+  .mediaFrame {
+    width: 300px;
+  }
+}
+
+@media (min-width: 768px) {
+  .mediaFrame {
+    width: 320px;
+  }
+}

@@ -1,0 +1,45 @@
+:root {
+  /* Colors */
+  --bg-primary: #f7f3ed;
+  --bg-secondary: #eae4d9;
+  --text-primary: #1f1a14;
+  --text-muted: #5c5347;
+  --accent: #b86f3d;
+  --accent-hover: #8b4f2a;
+
+  /* Typography */
+  --font-display: 'Instrument Serif', 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 96px;
+
+  /* Motion */
+  --transition-fast: 150ms ease-out;
+  --transition-base: 200ms ease-out;
+
+  /* Layout */
+  --max-width: 1200px;
+  --nav-height: 64px;
+  --section-padding-x: var(--space-md);
+  --section-padding-y: var(--space-lg);
+}
+
+@media (min-width: 375px) {
+  :root {
+    --section-padding-x: var(--space-lg);
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --section-padding-y: var(--space-2xl);
+  }
+}

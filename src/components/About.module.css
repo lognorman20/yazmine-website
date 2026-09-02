@@ -1,0 +1,85 @@
+.about {
+  padding: var(--section-padding-y) var(--section-padding-x);
+  background-color: var(--bg-primary);
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-xl);
+  max-width: var(--max-width);
+  margin: 0 auto;
+  align-items: center;
+}
+
+.imageCol {
+  order: -1;
+}
+
+.portrait {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  max-width: min(420px, 100%);
+  margin-inline: auto;
+  object-fit: cover;
+  background-color: var(--bg-secondary);
+}
+
+.textCol {
+  min-width: 0;
+  max-width: 540px;
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--text-primary);
+  margin-bottom: var(--space-lg);
+}
+
+.paragraph {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+.paragraph + .paragraph {
+  margin-top: var(--space-md);
+}
+
+.interviewLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: var(--space-lg);
+  padding-inline: var(--space-xs);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  border-bottom: 1px solid transparent;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+  touch-action: manipulation;
+}
+
+.interviewLink:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+@media (min-width: 768px) {
+  .inner {
+    grid-template-columns: 1fr 1.1fr;
+    gap: var(--space-2xl);
+  }
+
+  .imageCol {
+    order: 0;
+  }
+
+  .portrait {
+    margin-left: auto;
+  }
+}

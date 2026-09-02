@@ -1,0 +1,104 @@
+.contact {
+  padding: var(--section-padding-y) var(--section-padding-x);
+  background-color: var(--bg-secondary);
+}
+
+.inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--text-primary);
+  margin-bottom: var(--space-xl);
+}
+
+.mainGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2xl);
+}
+
+.block {
+  min-width: 0;
+}
+
+.blockTitle {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: var(--space-md);
+}
+
+.address {
+  font-style: normal;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+.addressNote {
+  display: block;
+  margin-top: var(--space-sm);
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+}
+
+.contactList {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-md);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.contactItem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-xs);
+}
+
+.contactLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.contactLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-primary);
+  word-break: break-word;
+  border-bottom: 1px solid transparent;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+  touch-action: manipulation;
+}
+
+.contactLink:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+@media (min-width: 768px) {
+  .mainGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2xl);
+    align-items: start;
+  }
+}

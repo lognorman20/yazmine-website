@@ -1,0 +1,136 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--bg-primary);
+  border-bottom: 1px solid var(--bg-secondary);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--section-padding-x);
+  height: var(--nav-height);
+}
+
+.logo {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-display);
+  font-size: clamp(0.875rem, 3.5vw, 1.125rem);
+  line-height: 1.2;
+  color: var(--text-primary);
+  transition: color var(--transition-fast);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  overflow-wrap: anywhere;
+}
+
+.logo:hover {
+  color: var(--accent);
+}
+
+.menuToggle {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  width: 44px;
+  height: 44px;
+  padding: var(--space-sm);
+  touch-action: manipulation;
+}
+
+.menuBar {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background-color: var(--text-primary);
+  transition: background-color var(--transition-fast);
+}
+
+.menuToggle:hover .menuBar {
+  background-color: var(--accent);
+}
+
+.links {
+  display: none;
+  position: absolute;
+  top: var(--nav-height);
+  left: 0;
+  right: 0;
+  flex-direction: column;
+  background-color: var(--bg-primary);
+  border-bottom: 1px solid var(--bg-secondary);
+  padding: var(--space-md) var(--section-padding-x) var(--space-lg);
+  gap: var(--space-xs);
+  max-height: calc(100dvh - var(--nav-height));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.linksOpen {
+  display: flex;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: color var(--transition-fast);
+}
+
+.link:hover {
+  color: var(--text-primary);
+}
+
+.bookButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 var(--space-lg);
+  margin-top: var(--space-sm);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--bg-primary);
+  background-color: var(--accent);
+  transition: background-color var(--transition-base);
+  touch-action: manipulation;
+}
+
+.bookButton:hover {
+  background-color: var(--accent-hover);
+}
+
+@media (min-width: 768px) {
+  .menuToggle {
+    display: none;
+  }
+
+  .links {
+    display: flex;
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    border-bottom: none;
+    padding: 0;
+    gap: var(--space-lg);
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  .bookButton {
+    margin-top: 0;
+    padding: 0 var(--space-md);
+  }
+}
