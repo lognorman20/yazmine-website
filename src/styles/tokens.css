@@ -2,6 +2,8 @@
   /* Colors */
   --bg-primary: #f7f3ed;
   --bg-secondary: #eae4d9;
+  --bg-warm: #ede5d8;
+  --accent-subtle: rgba(184, 111, 61, 0.14);
   --text-primary: #1f1a14;
   --text-muted: #5c5347;
   --accent: #b86f3d;

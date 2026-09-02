@@ -1,6 +1,6 @@
 ## Learned User Preferences
 
-- Mobile-first CSS: base styles target small screens; desktop layout only inside `@media (min-width: ...)`.
+- Mobile-first CSS: base styles target small screens; desktop layout only inside `@media (min-width: ...)`. On mobile, use stronger terracotta accents and section contrast so the page does not read as a flat cream wash.
 - Follow anti-ai-slop for all UI on this site: no purple gradients, SaaS templates, decorative shadows, emoji chrome, or vague CTAs like "Learn more".
 - Use CSS modules with locked tokens in `src/styles/tokens.css`; do not add Tailwind.
 - Body and secondary fonts must complement Instrument Serif; avoid Inter, Roboto, and generic system-ui as the site's personality.
@@ -10,6 +10,8 @@
 - Orchestrator owns design and planning; delegate implementation to composer-2.5 subagents.
 - Link labels should name the destination (e.g. "Read the Canvas Rebel interview"), not generic "Learn more".
 - Respond in caveman mode unless the user says "stop caveman" or "normal mode".
+- Gallery images and videos open in a lightbox on click or tap; tap-to-expand must work on mobile.
+- Keep About and Services at their committed layout; user reverted design-pass experiments (pull-quotes, portrait bleed, Services signature numbers, Book CTA).
 
 ## Learned Workspace Facts
 
@@ -21,3 +23,5 @@
 - Section order in `App.tsx`: Hero, About, Services, Gallery, Products, HoursAndPolicies, Contact, Footer (with Nav).
 - Social handles: Instagram, TikTok, and Facebook are @lusciousbyyazmine.
 - Booking/scheduling URL: `https://lusciousbyyazmine.as.me/`.
+- Live site: `https://lusciousbyyazmine.vercel.app` (Vercel).
+- GitHub repo: `https://github.com/lognorman20/yazmine-website`.

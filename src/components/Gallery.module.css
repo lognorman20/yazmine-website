@@ -1,6 +1,6 @@
 .gallery {
   padding: var(--section-padding-y) 0 var(--section-padding-y) var(--section-padding-x);
-  background-color: var(--bg-primary);
+  background-color: var(--bg-warm);
   overflow: hidden;
 }
 
@@ -19,13 +19,13 @@
   margin-bottom: var(--space-sm);
 }
 
-.swipeHint {
+.heading::after {
+  content: '';
+  display: block;
+  width: 2.5rem;
+  height: 2px;
   margin-top: var(--space-sm);
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-muted);
+  background-color: var(--accent);
 }
 
 .scrollWrap {
@@ -39,6 +39,7 @@
   scrollbar-color: var(--accent) var(--bg-secondary);
   padding-bottom: var(--space-md);
   overscroll-behavior-x: contain;
+  touch-action: pan-x pinch-zoom;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -63,7 +64,7 @@
   right: 0;
   bottom: var(--space-md);
   width: min(72px, 18vw);
-  background: linear-gradient(to left, var(--bg-primary), transparent);
+  background: linear-gradient(to left, var(--bg-warm), transparent);
   pointer-events: none;
 }
 
@@ -88,6 +89,7 @@
   font: inherit;
   color: inherit;
   text-align: inherit;
+  touch-action: manipulation;
 }
 
 .slideButton:focus-visible {
@@ -99,7 +101,7 @@
   aspect-ratio: 3 / 4;
   background-color: var(--bg-secondary);
   overflow: hidden;
-  border: 1px solid transparent;
+  border: 1px solid var(--accent-subtle);
   transition:
     border-color var(--transition-base),
     transform var(--transition-base);
@@ -122,6 +124,9 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 @media (min-width: 375px) {
@@ -137,11 +142,25 @@
 }
 
 @media (min-width: 768px) {
-  .swipeHint {
+  .gallery {
+    background-color: var(--bg-primary);
+  }
+
+  .edgeFade {
+    background: linear-gradient(to left, var(--bg-primary), transparent);
+  }
+
+  .heading::after {
     display: none;
   }
 
   .mediaFrame {
     width: 320px;
+    border-color: transparent;
+  }
+
+  .slideButton:hover .mediaFrame,
+  .slideButton:focus-visible .mediaFrame {
+    border-color: var(--accent);
   }
 }

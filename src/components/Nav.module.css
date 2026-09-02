@@ -3,7 +3,7 @@
   top: 0;
   z-index: 100;
   background-color: var(--bg-primary);
-  border-bottom: 1px solid var(--bg-secondary);
+  border-bottom: 2px solid var(--accent-subtle);
 }
 
 .nav {
@@ -124,6 +124,11 @@
 }
 
 @media (min-width: 768px) {
+  .header {
+    border-bottom-width: 1px;
+    border-bottom-color: var(--bg-secondary);
+  }
+
   .menuToggle {
     display: none;
   }
