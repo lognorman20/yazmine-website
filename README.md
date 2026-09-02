@@ -1,32 +1,61 @@
-# React + TypeScript + Vite
+# LusciousbyYazmine
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Marketing site for [LusciousbyYazmine](https://lusciousbyyazmine.vercel.app) — Brooklyn hairstylist Yazmine Taylor (natural hair, locs, braiding).
 
-Currently, two official plugins are available:
+## Links
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| | |
+|---|---|
+| **Live site** | [lusciousbyyazmine.vercel.app](https://lusciousbyyazmine.vercel.app) |
+| **GitHub** | [lognorman20/yazmine-website](https://github.com/lognorman20/yazmine-website) |
+| **Booking** | [lusciousbyyazmine.as.me](https://lusciousbyyazmine.as.me/) |
+| **About source** | [Canvas Rebel interview](https://canvasrebel.com/meet-yazmine-taylor/) |
 
-## React Compiler
+**Social:** [@lusciousbyyazmine](https://www.instagram.com/lusciousbyyazmine) on Instagram, TikTok, and Facebook (no YouTube).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Stack
 
-## Expanding the Oxlint configuration
+- Vite 8, React 19, TypeScript
+- CSS Modules (no Tailwind)
+- Design tokens in [`src/styles/tokens.css`](src/styles/tokens.css): cream `#F7F3ED`, terracotta `#B86F3D`, Instrument Serif (display) + Satoshi (body)
+- Lint: Oxlint (`npm run lint`)
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## Site structure
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+Single-page layout. Section order in [`src/App.tsx`](src/App.tsx):
+
+1. Hero
+2. About
+3. Services
+4. Gallery
+5. Products
+6. HoursAndPolicies
+7. Contact
+8. Footer
+
+`Nav` is fixed above the main content.
+
+Media assets live under `public/media/`.
+
+## Local development
+
+```bash
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Build for production:
+
+```bash
+npm run build
+```
+
+Preview the production build:
+
+```bash
+npm run preview
+```
+
+## Deployment
+
+Hosted on [Vercel](https://vercel.com) — team/project `munyon-canyon/lusciousbyyazmine`.

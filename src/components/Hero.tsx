@@ -7,29 +7,47 @@ const BOOKING_URL = 'https://lusciousbyyazmine.as.me/schedule/d8e29d20'
 
 export default function Hero() {
   const prefersReducedMotion = usePrefersReducedMotion()
-  const [videoIndex, setVideoIndex] = useState(0)
-  const videoRef = useRef<HTMLVideoElement>(null)
+  const [slotAIndex, setSlotAIndex] = useState(0)
+  const [slotBIndex, setSlotBIndex] = useState(1)
+  const [topIsA, setTopIsA] = useState(true)
+  const videoARef = useRef<HTMLVideoElement>(null)
+  const videoBRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
     if (prefersReducedMotion) {
       return
     }
 
-    const video = videoRef.current
-    if (!video) {
+    const topVideo = topIsA ? videoARef.current : videoBRef.current
+    topVideo?.play().catch(() => {})
+  }, [topIsA, slotAIndex, slotBIndex, prefersReducedMotion])
+
+  useEffect(() => {
+    if (prefersReducedMotion) {
       return
     }
 
-    video.load()
-    video.play().catch(() => {})
-
-    const onEnded = () => {
-      setVideoIndex((index) => (index + 1) % HERO_VIDEOS.length)
+    const topVideo = topIsA ? videoARef.current : videoBRef.current
+    if (!topVideo) {
+      return
     }
 
-    video.addEventListener('ended', onEnded)
-    return () => video.removeEventListener('ended', onEnded)
-  }, [videoIndex, prefersReducedMotion])
+    const onEnded = () => {
+      if (topIsA) {
+        const nextIndex = (slotAIndex + 1) % HERO_VIDEOS.length
+        setSlotBIndex(nextIndex)
+        setTopIsA(false)
+        return
+      }
+
+      const nextIndex = (slotBIndex + 1) % HERO_VIDEOS.length
+      setSlotAIndex(nextIndex)
+      setTopIsA(true)
+    }
+
+    topVideo.addEventListener('ended', onEnded)
+    return () => topVideo.removeEventListener('ended', onEnded)
+  }, [prefersReducedMotion, slotAIndex, slotBIndex, topIsA])
 
   return (
     <section id="hero" className={styles.hero} aria-labelledby="hero-heading">
@@ -42,15 +60,26 @@ export default function Hero() {
             decoding="async"
           />
         ) : (
-          <video
-            ref={videoRef}
-            className={styles.media}
-            src={HERO_VIDEOS[videoIndex]}
-            muted
-            playsInline
-            autoPlay
-            preload="auto"
-          />
+          <>
+            <video
+              ref={videoARef}
+              className={`${styles.media} ${topIsA ? styles.mediaTop : styles.mediaBottom}`}
+              src={HERO_VIDEOS[slotAIndex]}
+              muted
+              playsInline
+              autoPlay={topIsA}
+              preload="auto"
+            />
+            <video
+              ref={videoBRef}
+              className={`${styles.media} ${topIsA ? styles.mediaBottom : styles.mediaTop}`}
+              src={HERO_VIDEOS[slotBIndex]}
+              muted
+              playsInline
+              autoPlay={!topIsA}
+              preload="auto"
+            />
+          </>
         )}
         <div className={styles.scrim} />
       </div>
@@ -59,7 +88,7 @@ export default function Hero() {
         <h1 id="hero-heading" className={styles.title}>
           LusciousbyYazmine
         </h1>
-        <p className={styles.tagline}>Care, Culture, Confidence</p>
+        <p className={styles.tagline}>Locs, braids &amp; natural hair · Brooklyn</p>
         <a
           href={BOOKING_URL}
           className={styles.cta}

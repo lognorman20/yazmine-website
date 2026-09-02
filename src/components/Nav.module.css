@@ -21,7 +21,7 @@
   flex: 1;
   min-width: 0;
   font-family: var(--font-display);
-  font-size: clamp(0.875rem, 3.5vw, 1.125rem);
+  font-size: clamp(1rem, 4vw, 1.25rem);
   line-height: 1.2;
   color: var(--text-primary);
   transition: color var(--transition-fast);
@@ -86,11 +86,22 @@
   font-size: 0.9375rem;
   font-weight: 500;
   color: var(--text-muted);
-  transition: color var(--transition-fast);
+  border-bottom: 1px solid transparent;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
 }
 
 .link:hover {
   color: var(--text-primary);
+}
+
+.linkActive {
+  color: var(--text-primary);
+  border-bottom-color: var(--accent);
+}
+
+.logo.linkActive {
+  border-bottom-color: transparent;
+  color: var(--accent);
 }
 
 .bookButton {

@@ -6,7 +6,7 @@
 
 .header {
   max-width: var(--max-width);
-  margin: 0 auto var(--space-lg);
+  margin: 0 auto var(--space-md);
   padding-right: var(--section-padding-x);
 }
 
@@ -16,6 +16,20 @@
   font-weight: 400;
   line-height: 1.15;
   color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.swipeHint {
+  margin-top: var(--space-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.scrollWrap {
+  position: relative;
 }
 
 .scrollContainer {
@@ -43,6 +57,16 @@
   outline-offset: -2px;
 }
 
+.edgeFade {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: var(--space-md);
+  width: min(72px, 18vw);
+  background: linear-gradient(to left, var(--bg-primary), transparent);
+  pointer-events: none;
+}
+
 .track {
   display: flex;
   gap: var(--space-md);
@@ -54,11 +78,43 @@
   flex-shrink: 0;
 }
 
+.slideButton {
+  display: block;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+}
+
+.slideButton:focus-visible {
+  outline: none;
+}
+
 .mediaFrame {
-  width: min(260px, calc(100vw - var(--section-padding-x) * 2 - var(--space-md)));
+  width: min(260px, calc(82vw - var(--section-padding-x)));
   aspect-ratio: 3 / 4;
   background-color: var(--bg-secondary);
   overflow: hidden;
+  border: 1px solid transparent;
+  transition:
+    border-color var(--transition-base),
+    transform var(--transition-base);
+}
+
+.slideButton:hover .mediaFrame,
+.slideButton:focus-visible .mediaFrame {
+  border-color: var(--accent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .slideButton:hover .mediaFrame,
+  .slideButton:focus-visible .mediaFrame {
+    transform: scale(1.02);
+  }
 }
 
 .media {
@@ -70,17 +126,21 @@
 
 @media (min-width: 375px) {
   .mediaFrame {
-    width: 280px;
+    width: min(280px, calc(78vw - var(--section-padding-x)));
   }
 }
 
 @media (min-width: 414px) {
   .mediaFrame {
-    width: 300px;
+    width: min(300px, calc(74vw - var(--section-padding-x)));
   }
 }
 
 @media (min-width: 768px) {
+  .swipeHint {
+    display: none;
+  }
+
   .mediaFrame {
     width: 320px;
   }

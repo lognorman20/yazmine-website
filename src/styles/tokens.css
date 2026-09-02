@@ -24,6 +24,7 @@
   /* Motion */
   --transition-fast: 150ms ease-out;
   --transition-base: 200ms ease-out;
+  --transition-crossfade: 400ms ease-out;
 
   /* Layout */
   --max-width: 1200px;

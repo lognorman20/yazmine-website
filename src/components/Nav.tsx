@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useActiveSection } from '../hooks/useActiveSection'
 import styles from './Nav.module.css'
 
 const NAV_LINKS = [
@@ -10,10 +11,13 @@ const NAV_LINKS = [
   { label: 'Contact', href: '#contact' },
 ] as const
 
+const SECTION_IDS = ['#hero', ...NAV_LINKS.map((link) => link.href)] as const
+
 const BOOKING_URL = 'https://lusciousbyyazmine.as.me/schedule/d8e29d20'
 
 export default function Nav() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const activeSection = useActiveSection(SECTION_IDS)
 
   useEffect(() => {
     if (!menuOpen) return
@@ -37,7 +41,12 @@ export default function Nav() {
   return (
     <header className={styles.header}>
       <nav className={styles.nav} aria-label="Main navigation">
-        <a href="#hero" className={styles.logo} onClick={handleNavClick}>
+        <a
+          href="#hero"
+          className={`${styles.logo} ${activeSection === '#hero' ? styles.linkActive : ''}`}
+          onClick={handleNavClick}
+          aria-current={activeSection === '#hero' ? 'page' : undefined}
+        >
           LusciousbyYazmine
         </a>
 
@@ -59,7 +68,12 @@ export default function Nav() {
         >
           {NAV_LINKS.map((link) => (
             <li key={link.href}>
-              <a href={link.href} className={styles.link} onClick={handleNavClick}>
+              <a
+                href={link.href}
+                className={`${styles.link} ${activeSection === link.href ? styles.linkActive : ''}`}
+                onClick={handleNavClick}
+                aria-current={activeSection === link.href ? 'page' : undefined}
+              >
                 {link.label}
               </a>
             </li>
