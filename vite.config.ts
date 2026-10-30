@@ -6,6 +6,23 @@ const API_ROUTES: Record<string, 'GET' | 'POST'> = {
   '/api/book': 'POST',
 }
 
+// Vite only prints HMR and errors; this prints every dev request so the terminal shows all traffic.
+function requestLog(): Plugin {
+  return {
+    name: 'request-log',
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const start = performance.now()
+        res.on('finish', () => {
+          const ms = Math.round(performance.now() - start)
+          server.config.logger.info(`${req.method} ${req.url} ${res.statusCode} ${ms}ms`, { timestamp: true })
+        })
+        next()
+      })
+    },
+  }
+}
+
 // Vercel serves api/ in production; this runs the same handlers under `vite` so the booking flow works in dev.
 function apiRoutes(): Plugin {
   return {
@@ -24,11 +41,23 @@ function apiRoutes(): Plugin {
           body: method === 'POST' ? Buffer.concat(chunks) : undefined,
         })
 
-        const handlers = await server.ssrLoadModule(`${url.pathname}.ts`)
-        const response: Response = await handlers[method](request)
-        res.statusCode = response.status
-        res.setHeader('Content-Type', 'application/json')
-        res.end(await response.text())
+        const { logger } = server.config
+        if (method === 'POST') logger.info(`  -> ${Buffer.concat(chunks).toString()}`, { timestamp: true })
+
+        try {
+          const handlers = await server.ssrLoadModule(`${url.pathname}.ts`)
+          const response: Response = await handlers[method](request)
+          const body = await response.text()
+          logger.info(`  <- ${response.status} ${body}`, { timestamp: true })
+          res.statusCode = response.status
+          res.setHeader('Content-Type', 'application/json')
+          res.end(body)
+        } catch (error) {
+          logger.error(`  !! ${url.pathname} threw: ${error instanceof Error ? error.stack : String(error)}`, { timestamp: true })
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({ error: 'Internal error' }))
+        }
       })
     },
   }
@@ -36,5 +65,5 @@ function apiRoutes(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), apiRoutes()],
+  plugins: [react(), requestLog(), apiRoutes()],
 })
