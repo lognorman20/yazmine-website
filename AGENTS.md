@@ -1,6 +1,6 @@
 ## Learned User Preferences
 
-- Mobile-first CSS: base styles target small screens; desktop layout only inside `@media (min-width: ...)`. On mobile, use stronger terracotta accents and section contrast so the page does not read as a flat cream wash.
+- Mobile-first CSS: base styles target small screens; desktop layout only inside `@media (min-width: ...)`. On mobile, use strong purple accents and section contrast so the page does not read as a flat white wash.
 - Follow anti-ai-slop for all UI on this site: no purple gradients, SaaS templates, decorative shadows, emoji chrome, or vague CTAs like "Learn more".
 - Use CSS modules with locked tokens in `src/styles/tokens.css`; do not add Tailwind.
 - Body and secondary fonts must complement Instrument Serif; avoid Inter, Roboto, and generic system-ui as the site's personality.
@@ -16,11 +16,11 @@
 ## Learned Workspace Facts
 
 - Vite + React + TypeScript SPA for LusciousbyYazmine (hairstylist Yazmine Taylor; Brooklyn natural hair, locs, braiding).
-- Design tokens in `src/styles/tokens.css`: cream `#F7F3ED`, terracotta accent `#B86F3D`, Instrument Serif display, Satoshi body.
+- Design tokens in `src/styles/tokens.css`: palette is black/white/purple (matches product label) with brown as secondary — white `#FFFFFF` bg, lilac-gray `#F3F0F6` alt sections, black `#111111` text and footer, purple accent `#7B4BA0`, brown `#B86F3D` secondary; Instrument Serif display, Satoshi body.
 - Media assets live under `public/media/`; hero loops all videos back-to-back; About portrait is `yazmine_headshot`; gallery mixes photos and videos.
 - Canvas Rebel interview (`https://canvasrebel.com/meet-yazmine-taylor/`) is the canonical source for About copy.
 - Official business flyer is source of truth for hours, deposit/payment/lateness/rescheduling policies, and public contact details.
-- Section order in `App.tsx`: Hero, About, Services, Gallery, Products, HoursAndPolicies, Contact, Footer (with Nav).
+- Section order in `App.tsx`: About, Hero, Services, Gallery, Products, HoursAndPolicies, Booking, Contact, Footer (with Nav).
 - Social handles: Instagram, TikTok, and Facebook are @lusciousbyyazmine.
 - Booking/scheduling URL: `https://lusciousbyyazmine.as.me/`.
 - Live site: `https://lusciousbyyazmine.vercel.app` (Vercel).
