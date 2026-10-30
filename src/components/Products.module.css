@@ -59,6 +59,13 @@
   color: var(--text-primary);
 }
 
+.price {
+  margin-top: var(--space-xs);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--accent-hover);
+}
+
 .description {
   margin-top: var(--space-sm);
   font-size: 0.875rem;
