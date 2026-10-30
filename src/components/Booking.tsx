@@ -177,13 +177,11 @@ export default function Booking() {
   const [week, setWeek] = useState(0)
   const days = useMemo(() => bookingWeek(new Date(), week), [week])
   const headingRef = useRef<HTMLHeadingElement>(null)
-  const hasMounted = useRef(false)
+  const focusedStep = useRef(state.step)
 
   useEffect(() => {
-    if (!hasMounted.current) {
-      hasMounted.current = true
-      return
-    }
+    if (focusedStep.current === state.step) return
+    focusedStep.current = state.step
     headingRef.current?.focus()
   }, [state.step])
 
@@ -269,8 +267,13 @@ export default function Booking() {
                   className={styles.serviceOption}
                   onClick={() => dispatch({ type: 'chooseService', service })}
                 >
-                  <span className={styles.serviceName}>{service.name}</span>
-                  <span className={styles.serviceMeta}>{formatDuration(service.durationMinutes)}</span>
+                  <span className={styles.serviceText}>
+                    <span className={styles.serviceName}>{service.name}</span>
+                    <span className={styles.serviceMeta}>{formatDuration(service.durationMinutes)}</span>
+                  </span>
+                  <span className={styles.selectLabel} aria-hidden="true">
+                    Select
+                  </span>
                 </button>
               </li>
             ))}

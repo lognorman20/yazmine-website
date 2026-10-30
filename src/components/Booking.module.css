@@ -85,7 +85,7 @@
 
 .serviceOption {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: var(--space-md);
   width: 100%;
@@ -108,10 +108,30 @@
   line-height: 1.2;
 }
 
+.serviceText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
 .serviceMeta {
-  flex-shrink: 0;
   font-size: 0.875rem;
   color: var(--text-muted);
+}
+
+.selectLabel {
+  flex-shrink: 0;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--accent);
+  color: var(--accent-hover);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.serviceOption:active .selectLabel {
+  background-color: var(--accent);
+  color: var(--bg-primary);
 }
 
 .weekNav {
@@ -342,6 +362,11 @@
 @media (hover: hover) {
   .serviceOption:hover {
     color: var(--accent-hover);
+  }
+
+  .serviceOption:hover .selectLabel {
+    background-color: var(--accent);
+    color: var(--bg-primary);
   }
 
   .dateChip:not(:disabled):hover,
