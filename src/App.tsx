@@ -7,22 +7,25 @@ import Products from './components/Products'
 import HoursAndPolicies from './components/HoursAndPolicies'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
+import CartProvider from './cart/CartProvider'
 import styles from './App.module.css'
 
 export default function App() {
   return (
-    <div className={styles.app}>
-      <Nav />
-      <main>
-        <Hero />
-        <About />
-        <Services />
-        <Gallery />
-        <Products />
-        <HoursAndPolicies />
-        <Contact />
-      </main>
-      <Footer />
-    </div>
+    <CartProvider>
+      <div className={styles.app}>
+        <Nav />
+        <main>
+          <Hero />
+          <About />
+          <Services />
+          <Gallery />
+          <Products />
+          <HoursAndPolicies />
+          <Contact />
+        </main>
+        <Footer />
+      </div>
+    </CartProvider>
   )
 }
