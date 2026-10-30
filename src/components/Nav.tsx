@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useCart } from '../cart/CartContext'
 import { useActiveSection } from '../hooks/useActiveSection'
 import styles from './Nav.module.css'
 
@@ -15,8 +16,18 @@ const SECTION_IDS = ['#hero', ...NAV_LINKS.map((link) => link.href)] as const
 
 const BOOKING_URL = 'https://lusciousbyyazmine.as.me/schedule/d8e29d20'
 
+function BagIcon() {
+  return (
+    <svg aria-hidden="true" className={styles.bagIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+      <path d="M5 8h14l-1 12H6L5 8z" />
+      <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+    </svg>
+  )
+}
+
 export default function Nav() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const { itemCount, openBag } = useCart()
   const activeSection = useActiveSection(SECTION_IDS)
 
   useEffect(() => {
@@ -49,6 +60,23 @@ export default function Nav() {
         >
           LusciousbyYazmine
         </a>
+
+        <button
+          type="button"
+          className={styles.bagButton}
+          onClick={() => {
+            setMenuOpen(false)
+            openBag()
+          }}
+          aria-label={`Open bag, ${itemCount} ${itemCount === 1 ? 'item' : 'items'}`}
+        >
+          <BagIcon />
+          {itemCount > 0 && (
+            <span className={styles.bagCount} aria-hidden="true">
+              {itemCount}
+            </span>
+          )}
+        </button>
 
         <button
           type="button"

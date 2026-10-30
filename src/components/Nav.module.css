@@ -47,6 +47,50 @@
   touch-action: manipulation;
 }
 
+.bagButton {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: var(--text-primary);
+  transition: color var(--transition-fast);
+  touch-action: manipulation;
+}
+
+.bagButton:hover {
+  color: var(--accent);
+}
+
+.bagButton:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.bagIcon {
+  width: 24px;
+  height: 24px;
+}
+
+.bagCount {
+  position: absolute;
+  top: 4px;
+  right: 2px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 18px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--bg-primary);
+  background-color: var(--accent);
+  border-radius: 9px;
+}
+
 .menuBar {
   display: block;
   width: 22px;
@@ -131,6 +175,10 @@
 
   .menuToggle {
     display: none;
+  }
+
+  .bagButton {
+    order: 1;
   }
 
   .links {
