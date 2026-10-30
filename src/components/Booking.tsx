@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useReducer, useRef, useState, type FormEvent } from 'react'
-import { BOOKABLE_SERVICES, TIME_ZONE, type BookableService } from '../booking/config'
+import { BOOKABLE_SERVICES, TIME_ZONE, depositCents, type BookableService } from '../booking/config'
 import { BOOKING_WEEK_COUNT, bookingWeek } from '../booking/slots'
+import { formatPrice } from '../data/products'
 import styles from './Booking.module.css'
 
 type Details = { name: string; email: string; phone: string; notes: string; website: string }
 
 type FailureReason = 'failed' | 'notConnected'
+
+type Deposit = { amountCents: number; reference: string; demo: boolean }
 
 type Slots = { status: 'loading' } | { status: 'ready'; starts: string[] } | { status: 'failed' }
 
@@ -14,8 +17,9 @@ type State =
   | { step: 'date'; service: BookableService }
   | { step: 'time'; service: BookableService; date: string; slots: Slots; notice?: string }
   | { step: 'details'; service: BookableService; date: string; start: string; details?: Details }
+  | { step: 'deposit'; service: BookableService; date: string; start: string; details: Details }
   | { step: 'submitting'; service: BookableService; date: string; start: string; details: Details }
-  | { step: 'confirmed'; service: BookableService; date: string; start: string }
+  | { step: 'confirmed'; service: BookableService; date: string; start: string; deposit: Deposit | null }
   | { step: 'error'; service: BookableService; date: string; start: string; details: Details; reason: FailureReason }
 
 type Action =
@@ -25,7 +29,8 @@ type Action =
   | { type: 'slotsFailed' }
   | { type: 'chooseTime'; start: string }
   | { type: 'submit'; details: Details }
-  | { type: 'booked' }
+  | { type: 'pay' }
+  | { type: 'booked'; deposit: Deposit | null }
   | { type: 'slotTaken' }
   | { type: 'bookingFailed'; reason: FailureReason }
   | { type: 'retry' }
@@ -49,10 +54,12 @@ function reducer(state: State, action: Action): State {
         ? { step: 'details', service: state.service, date: state.date, start: action.start }
         : state
     case 'submit':
-      return state.step === 'details' ? { ...state, step: 'submitting', details: action.details } : state
+      return state.step === 'details' ? { ...state, step: 'deposit', details: action.details } : state
+    case 'pay':
+      return state.step === 'deposit' ? { ...state, step: 'submitting' } : state
     case 'booked':
       return state.step === 'submitting'
-        ? { step: 'confirmed', service: state.service, date: state.date, start: state.start }
+        ? { step: 'confirmed', service: state.service, date: state.date, start: state.start, deposit: action.deposit }
         : state
     case 'slotTaken':
       return state.step === 'submitting'
@@ -67,7 +74,7 @@ function reducer(state: State, action: Action): State {
     case 'bookingFailed':
       return state.step === 'submitting' ? { ...state, step: 'error', reason: action.reason } : state
     case 'retry':
-      return state.step === 'error' ? { ...state, step: 'details' } : state
+      return state.step === 'error' ? { ...state, step: 'deposit' } : state
     case 'back':
       switch (state.step) {
         case 'date':
@@ -76,6 +83,8 @@ function reducer(state: State, action: Action): State {
           return { step: 'date', service: state.service }
         case 'details':
           return { step: 'time', service: state.service, date: state.date, slots: { status: 'loading' } }
+        case 'deposit':
+          return { ...state, step: 'details' }
         default:
           return state
       }
@@ -132,14 +141,17 @@ function chipParts(date: string): { weekday: string; month: string; day: string 
   return { weekday: parts.weekday, month: parts.month, day: parts.day }
 }
 
-async function postBooking(body: Record<string, string>): Promise<Action> {
+async function postBooking(body: Record<string, string | boolean>): Promise<Action> {
   try {
     const response = await fetch('/api/book', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     })
-    if (response.ok) return { type: 'booked' }
+    if (response.ok) {
+      const body = (await response.json()) as { deposit?: Deposit }
+      return { type: 'booked', deposit: body.deposit ?? null }
+    }
     if (response.status === 409) return { type: 'slotTaken' }
     if (response.status === 503) return { type: 'bookingFailed', reason: 'notConnected' }
     return { type: 'bookingFailed', reason: 'failed' }
@@ -149,7 +161,7 @@ async function postBooking(body: Record<string, string>): Promise<Action> {
 }
 
 function statusMessage(state: State): string {
-  if (state.step === 'submitting') return 'Booking your appointment…'
+  if (state.step === 'submitting') return 'Paying your deposit and booking your appointment…'
   if (state.step !== 'time') return ''
   if (state.notice) return state.notice
   switch (state.slots.status) {
@@ -167,7 +179,8 @@ const STEP_TITLES: Record<State['step'], string> = {
   date: 'Pick a date',
   time: 'Pick a time',
   details: 'Your details',
-  submitting: 'Your details',
+  deposit: 'Pay your deposit',
+  submitting: 'Pay your deposit',
   confirmed: 'You are booked',
   error: 'Booking did not go through',
 }
@@ -205,7 +218,7 @@ export default function Booking() {
     return () => controller.abort()
   }, [slotQuery])
 
-  const handleDetails = async (event: FormEvent<HTMLFormElement>) => {
+  const handleDetails = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (state.step !== 'details') return
     const form = new FormData(event.currentTarget)
@@ -218,7 +231,15 @@ export default function Booking() {
       website: field('website'),
     }
     dispatch({ type: 'submit', details })
-    dispatch(await postBooking({ serviceId: state.service.id, start: state.start, ...details }))
+  }
+
+  const handleDeposit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (state.step !== 'deposit') return
+    dispatch({ type: 'pay' })
+    dispatch(
+      await postBooking({ serviceId: state.service.id, start: state.start, ...state.details, acceptedPolicy: true }),
+    )
   }
 
   const summary =
@@ -247,7 +268,7 @@ export default function Booking() {
           <h3 ref={headingRef} tabIndex={-1} className={styles.stepTitle}>
             {STEP_TITLES[state.step]}
           </h3>
-          {(state.step === 'date' || state.step === 'time' || state.step === 'details') && (
+          {(state.step === 'date' || state.step === 'time' || state.step === 'details' || state.step === 'deposit') && (
             <button type="button" className={styles.back} onClick={() => dispatch({ type: 'back' })}>
               Back
             </button>
@@ -269,7 +290,9 @@ export default function Booking() {
                 >
                   <span className={styles.serviceText}>
                     <span className={styles.serviceName}>{service.name}</span>
-                    <span className={styles.serviceMeta}>{formatDuration(service.durationMinutes)}</span>
+                    <span className={styles.serviceMeta}>
+                      {formatDuration(service.durationMinutes)} · {formatPrice(service.priceCents)}
+                    </span>
                   </span>
                   <span className={styles.selectLabel} aria-hidden="true">
                     Select
@@ -344,9 +367,9 @@ export default function Booking() {
           </ul>
         )}
 
-        {(state.step === 'details' || state.step === 'submitting') && (
+        {state.step === 'details' && (
           <form className={styles.form} onSubmit={handleDetails}>
-            <fieldset className={styles.fieldset} disabled={state.step === 'submitting'}>
+            <fieldset className={styles.fieldset}>
               <label className={styles.field}>
                 <span className={styles.label}>Name</span>
                 <input name="name" autoComplete="name" required maxLength={100} defaultValue={state.details?.name} />
@@ -383,7 +406,43 @@ export default function Booking() {
                 <input name="website" tabIndex={-1} autoComplete="off" />
               </label>
               <button type="submit" className={styles.primary}>
-                {state.step === 'submitting' ? 'Booking…' : 'Confirm booking'}
+                Continue to deposit
+              </button>
+            </fieldset>
+          </form>
+        )}
+
+        {(state.step === 'deposit' || state.step === 'submitting') && (
+          <form className={styles.form} onSubmit={handleDeposit}>
+            <fieldset className={styles.fieldset} disabled={state.step === 'submitting'}>
+              <dl className={styles.priceList}>
+                <div>
+                  <dt>{state.service.name}</dt>
+                  <dd>{formatPrice(state.service.priceCents)}</dd>
+                </div>
+                <div className={styles.priceDue}>
+                  <dt>Deposit due now (50%)</dt>
+                  <dd>{formatPrice(depositCents(state.service))}</dd>
+                </div>
+                <div>
+                  <dt>Balance at your appointment</dt>
+                  <dd>{formatPrice(state.service.priceCents - depositCents(state.service))}</dd>
+                </div>
+              </dl>
+              <label className={styles.check}>
+                <input name="acceptedPolicy" type="checkbox" required />
+                <span>
+                  I understand the deposit is non-refundable and comes off my service total. I have read the{' '}
+                  <a href="#info">lateness and rescheduling policies</a>.
+                </span>
+              </label>
+              <p className={styles.demoNote}>
+                Demo payment: card payments are not connected yet, so no card is charged.
+              </p>
+              <button type="submit" className={styles.primary}>
+                {state.step === 'submitting'
+                  ? 'Paying…'
+                  : `Pay ${formatPrice(depositCents(state.service))} deposit`}
               </button>
             </fieldset>
           </form>
@@ -402,6 +461,15 @@ export default function Booking() {
                   {formatDate(state.date)} at {formatTime(state.start)}
                 </dd>
               </div>
+              {state.deposit && (
+                <div>
+                  <dt>{state.deposit.demo ? 'Deposit (demo, not charged)' : 'Deposit paid'}</dt>
+                  <dd>
+                    {formatPrice(state.deposit.amountCents)} · {formatPrice(state.service.priceCents - state.deposit.amountCents)}{' '}
+                    due at your appointment
+                  </dd>
+                </div>
+              )}
             </dl>
             <p className={styles.confirmNote}>Check your email for the calendar invite.</p>
             <button type="button" className={styles.secondary} onClick={() => dispatch({ type: 'restart' })}>
@@ -415,7 +483,7 @@ export default function Booking() {
             <p className={styles.confirmNote}>
               {state.reason === 'notConnected'
                 ? 'Online booking is not live yet, so this appointment was not booked. Call or text (551) 257-5820, or email info@lusciousbyyazmine.com to book.'
-                : 'Your appointment was not booked. Try again, or call or email using the contact details below.'}
+                : 'Your appointment was not booked and no deposit was taken. Try again, or call or email using the contact details below.'}
             </p>
             {state.reason === 'failed' && (
               <button type="button" className={styles.primary} onClick={() => dispatch({ type: 'retry' })}>
