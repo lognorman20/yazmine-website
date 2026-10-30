@@ -90,7 +90,12 @@ export async function POST(request: Request): Promise<Response> {
   try {
     const slots = await fetchSlots(booking.date, booking.service, now)
     if (!slots.includes(booking.start.toISOString())) return json(409, { error: 'slot_taken' })
-    if (!isGoogleConfigured()) return json(503, { error: 'booking_not_connected' })
+    if (!isGoogleConfigured()) {
+      // Previews confirm without booking anything; production must never promise a slot it did not book.
+      return process.env.VERCEL_ENV === 'production'
+        ? json(503, { error: 'booking_not_connected' })
+        : json(201, { start: booking.start.toISOString(), end: end.toISOString() })
+    }
 
     await insertEvent({
       summary: `${booking.service.name} · ${booking.name}`,

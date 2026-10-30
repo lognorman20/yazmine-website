@@ -81,15 +81,17 @@ export function isWithinHorizon(date: string, now: Date): boolean {
   return date > today && date <= addDays(today, BOOKING_HORIZON_DAYS)
 }
 
-/** Dates within the horizon that have opening hours. */
-export function openDates(now: Date): string[] {
-  const today = zonedDate(now)
-  const dates: string[] = []
-  for (let offset = 1; offset <= BOOKING_HORIZON_DAYS; offset++) {
-    const date = addDays(today, offset)
-    if (WEEKLY_HOURS[weekdayOf(date)]) dates.push(date)
-  }
-  return dates
+export type CalendarDay = { date: string; open: boolean }
+
+export const BOOKING_WEEK_COUNT = Math.ceil(BOOKING_HORIZON_DAYS / 7)
+
+/** Seven consecutive days starting tomorrow plus `week` weeks; a day is open when it has hours and sits in the horizon. */
+export function bookingWeek(now: Date, week: number): CalendarDay[] {
+  const start = addDays(zonedDate(now), 1 + week * 7)
+  return Array.from({ length: 7 }, (_, offset) => {
+    const date = addDays(start, offset)
+    return { date, open: WEEKLY_HOURS[weekdayOf(date)] !== null && isWithinHorizon(date, now) }
+  })
 }
 
 function toMinutes(hhmm: string): number {

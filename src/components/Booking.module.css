@@ -114,27 +114,45 @@
   color: var(--text-muted);
 }
 
-.dates {
+.weekNav {
   display: flex;
-  gap: var(--space-sm);
-  margin: 0 calc(-1 * var(--section-padding-x));
-  padding: var(--space-xs) var(--section-padding-x) var(--space-md);
-  overflow-x: auto;
-  scroll-snap-type: x proximity;
-  scroll-padding-inline: var(--section-padding-x);
-  overscroll-behavior-x: contain;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-sm);
 }
 
-.dates li {
-  flex-shrink: 0;
-  scroll-snap-align: start;
+.weekRange {
+  margin: 0;
+  font-weight: 500;
+}
+
+.weekArrow {
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(31, 26, 20, 0.2);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  line-height: 1;
+  touch-action: manipulation;
+}
+
+.weekArrow:disabled {
+  opacity: 0.35;
+}
+
+.dates {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--space-xs);
 }
 
 .dateChip {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 68px;
+  width: 100%;
   padding: var(--space-sm) 0;
   border: 1px solid rgba(31, 26, 20, 0.2);
   background-color: var(--bg-primary);
@@ -144,7 +162,7 @@
   touch-action: manipulation;
 }
 
-.dateChip:active,
+.dateChip:not(:disabled):active,
 .timeOption:active {
   border-color: var(--accent);
   background-color: var(--accent);
@@ -161,8 +179,15 @@
 
 .chipDay {
   font-family: var(--font-display);
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   line-height: 1.1;
+}
+
+.dateChip:disabled {
+  border-color: transparent;
+  background-color: transparent;
+  color: var(--text-muted);
+  opacity: 0.5;
 }
 
 .times {
@@ -319,7 +344,7 @@
     color: var(--accent-hover);
   }
 
-  .dateChip:hover,
+  .dateChip:not(:disabled):hover,
   .timeOption:hover {
     border-color: var(--accent);
     background-color: var(--accent);
@@ -333,10 +358,16 @@
   }
 
   .dates {
-    flex-wrap: wrap;
-    margin: 0;
-    padding: var(--space-xs) 0 0;
-    overflow-x: visible;
+    gap: var(--space-sm);
+    max-width: 560px;
+  }
+
+  .weekNav {
+    max-width: 560px;
+  }
+
+  .chipDay {
+    font-size: 1.75rem;
   }
 
   .times {

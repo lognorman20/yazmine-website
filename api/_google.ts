@@ -11,7 +11,7 @@ type GoogleEnv = Record<(typeof ENV_KEYS)[number], string>
 
 class GoogleApiError extends Error {}
 
-/** False until the Google credentials are set; slots then ignore the calendar and booking is refused. */
+/** False until the Google credentials are set; availability and booking then run in demo mode. */
 export function isGoogleConfigured(): boolean {
   return ENV_KEYS.every((key) => process.env[key])
 }

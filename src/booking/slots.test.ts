@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { computeSlots, isWithinHorizon, openDates } from './slots.ts'
+import { BOOKING_WEEK_COUNT, bookingWeek, computeSlots, isWithinHorizon } from './slots.ts'
 
 const longAgo = new Date('2026-01-01T00:00:00Z')
 
@@ -60,7 +60,11 @@ test('horizon starts tomorrow in New York time and skips closed days', () => {
   assert.equal(isWithinHorizon('2026-10-21', now), true)
   assert.equal(isWithinHorizon('2026-12-19', now), true)
   assert.equal(isWithinHorizon('2026-12-20', now), false)
-  const dates = openDates(now)
-  assert.equal(dates[0], '2026-10-21')
-  assert.ok(!dates.includes('2026-10-25'), 'Sunday is closed')
+  const week = bookingWeek(now, 0)
+  assert.equal(week.length, 7)
+  assert.equal(week[0].date, '2026-10-21')
+  assert.deepEqual(week.find((day) => day.date === '2026-10-25'), { date: '2026-10-25', open: false })
+  const lastWeek = bookingWeek(now, BOOKING_WEEK_COUNT - 1)
+  assert.equal(lastWeek.at(-1)?.open, false, 'days past the horizon are not bookable')
+  assert.equal(lastWeek.find((day) => day.date === '2026-12-19')?.open, true)
 })

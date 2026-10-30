@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useReducer, useRef, type FormEvent } from 'react'
+import { useEffect, useMemo, useReducer, useRef, useState, type FormEvent } from 'react'
 import { BOOKABLE_SERVICES, TIME_ZONE, type BookableService } from '../booking/config'
-import { openDates } from '../booking/slots'
+import { BOOKING_WEEK_COUNT, bookingWeek } from '../booking/slots'
 import styles from './Booking.module.css'
 
 type Details = { name: string; email: string; phone: string; notes: string; website: string }
@@ -96,6 +96,11 @@ const chipFormat = new Intl.DateTimeFormat('en-US', {
   month: 'short',
   day: 'numeric',
 })
+const rangeFormat = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'UTC',
+  month: 'short',
+  day: 'numeric',
+})
 const timeFormat = new Intl.DateTimeFormat('en-US', {
   timeZone: TIME_ZONE,
   hour: 'numeric',
@@ -169,7 +174,8 @@ const STEP_TITLES: Record<State['step'], string> = {
 
 export default function Booking() {
   const [state, dispatch] = useReducer(reducer, { step: 'service' })
-  const dates = useMemo(() => openDates(new Date()), [])
+  const [week, setWeek] = useState(0)
+  const days = useMemo(() => bookingWeek(new Date(), week), [week])
   const headingRef = useRef<HTMLHeadingElement>(null)
   const hasMounted = useRef(false)
 
@@ -272,25 +278,51 @@ export default function Booking() {
         )}
 
         {state.step === 'date' && (
-          <ul className={styles.dates} aria-label="Available dates">
-            {dates.map((date) => {
-              const parts = chipParts(date)
-              return (
-                <li key={date}>
-                  <button
-                    type="button"
-                    className={styles.dateChip}
-                    aria-label={formatDate(date)}
-                    onClick={() => dispatch({ type: 'chooseDate', date })}
-                  >
-                    <span className={styles.chipWeekday}>{parts.weekday}</span>
-                    <span className={styles.chipDay}>{parts.day}</span>
-                    <span className={styles.chipMonth}>{parts.month}</span>
-                  </button>
-                </li>
-              )
-            })}
-          </ul>
+          <div>
+            <div className={styles.weekNav}>
+              <button
+                type="button"
+                className={styles.weekArrow}
+                aria-label="Previous week"
+                disabled={week === 0}
+                onClick={() => setWeek(week - 1)}
+              >
+                ‹
+              </button>
+              <p className={styles.weekRange}>
+                {rangeFormat.formatRange(calendarDate(days[0].date), calendarDate(days[6].date))}
+              </p>
+              <button
+                type="button"
+                className={styles.weekArrow}
+                aria-label="Next week"
+                disabled={week === BOOKING_WEEK_COUNT - 1}
+                onClick={() => setWeek(week + 1)}
+              >
+                ›
+              </button>
+            </div>
+            <ul className={styles.dates} aria-label="Dates this week">
+              {days.map(({ date, open }) => {
+                const parts = chipParts(date)
+                return (
+                  <li key={date}>
+                    <button
+                      type="button"
+                      className={styles.dateChip}
+                      aria-label={open ? formatDate(date) : `${formatDate(date)}, closed`}
+                      disabled={!open}
+                      onClick={() => dispatch({ type: 'chooseDate', date })}
+                    >
+                      <span className={styles.chipWeekday}>{parts.weekday}</span>
+                      <span className={styles.chipDay}>{parts.day}</span>
+                      <span className={styles.chipMonth}>{parts.month}</span>
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
         )}
 
         {state.step === 'time' && state.slots.status === 'ready' && (
