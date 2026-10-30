@@ -5,6 +5,8 @@ import styles from './Booking.module.css'
 
 type Details = { name: string; email: string; phone: string; notes: string; website: string }
 
+type FailureReason = 'failed' | 'notConnected'
+
 type Slots = { status: 'loading' } | { status: 'ready'; starts: string[] } | { status: 'failed' }
 
 type State =
@@ -14,7 +16,7 @@ type State =
   | { step: 'details'; service: BookableService; date: string; start: string; details?: Details }
   | { step: 'submitting'; service: BookableService; date: string; start: string; details: Details }
   | { step: 'confirmed'; service: BookableService; date: string; start: string }
-  | { step: 'error'; service: BookableService; date: string; start: string; details: Details }
+  | { step: 'error'; service: BookableService; date: string; start: string; details: Details; reason: FailureReason }
 
 type Action =
   | { type: 'chooseService'; service: BookableService }
@@ -25,7 +27,7 @@ type Action =
   | { type: 'submit'; details: Details }
   | { type: 'booked' }
   | { type: 'slotTaken' }
-  | { type: 'bookingFailed' }
+  | { type: 'bookingFailed'; reason: FailureReason }
   | { type: 'retry' }
   | { type: 'back' }
   | { type: 'restart' }
@@ -63,7 +65,7 @@ function reducer(state: State, action: Action): State {
           }
         : state
     case 'bookingFailed':
-      return state.step === 'submitting' ? { ...state, step: 'error' } : state
+      return state.step === 'submitting' ? { ...state, step: 'error', reason: action.reason } : state
     case 'retry':
       return state.step === 'error' ? { ...state, step: 'details' } : state
     case 'back':
@@ -134,9 +136,10 @@ async function postBooking(body: Record<string, string>): Promise<Action> {
     })
     if (response.ok) return { type: 'booked' }
     if (response.status === 409) return { type: 'slotTaken' }
-    return { type: 'bookingFailed' }
+    if (response.status === 503) return { type: 'bookingFailed', reason: 'notConnected' }
+    return { type: 'bookingFailed', reason: 'failed' }
   } catch {
-    return { type: 'bookingFailed' }
+    return { type: 'bookingFailed', reason: 'failed' }
   }
 }
 
@@ -375,12 +378,15 @@ export default function Booking() {
         {state.step === 'error' && (
           <div className={styles.confirmation}>
             <p className={styles.confirmNote}>
-              Your appointment was not booked. Try again, or call or email using the contact details
-              below.
+              {state.reason === 'notConnected'
+                ? 'Online booking is not live yet, so this appointment was not booked. Call or text (551) 257-5820, or email info@lusciousbyyazmine.com to book.'
+                : 'Your appointment was not booked. Try again, or call or email using the contact details below.'}
             </p>
-            <button type="button" className={styles.primary} onClick={() => dispatch({ type: 'retry' })}>
-              Try again
-            </button>
+            {state.reason === 'failed' && (
+              <button type="button" className={styles.primary} onClick={() => dispatch({ type: 'retry' })}>
+                Try again
+              </button>
+            )}
           </div>
         )}
       </div>

@@ -1,7 +1,7 @@
 import { TIME_ZONE, type BookableService } from '../src/booking/config.ts'
 import { zonedDate } from '../src/booking/slots.ts'
 import { fetchSlots, parseBookableDate, parseService } from './_booking.ts'
-import { insertEvent, json, serverError } from './_google.ts'
+import { insertEvent, isGoogleConfigured, json, serverError } from './_google.ts'
 
 type BookingRequest = {
   service: BookableService
@@ -90,6 +90,7 @@ export async function POST(request: Request): Promise<Response> {
   try {
     const slots = await fetchSlots(booking.date, booking.service, now)
     if (!slots.includes(booking.start.toISOString())) return json(409, { error: 'slot_taken' })
+    if (!isGoogleConfigured()) return json(503, { error: 'booking_not_connected' })
 
     await insertEvent({
       summary: `${booking.service.name} · ${booking.name}`,

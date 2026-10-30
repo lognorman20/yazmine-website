@@ -5,12 +5,16 @@ const ENV_KEYS = [
   'GOOGLE_CLIENT_SECRET',
   'GOOGLE_REFRESH_TOKEN',
   'GOOGLE_CALENDAR_ID',
-  'STYLIST_EMAIL',
 ] as const
 
 type GoogleEnv = Record<(typeof ENV_KEYS)[number], string>
 
 class GoogleApiError extends Error {}
+
+/** False until the Google credentials are set; slots then ignore the calendar and booking is refused. */
+export function isGoogleConfigured(): boolean {
+  return ENV_KEYS.every((key) => process.env[key])
+}
 
 function readEnv(): GoogleEnv {
   const missing = ENV_KEYS.filter((key) => !process.env[key])
@@ -91,7 +95,9 @@ export async function insertEvent(event: NewEvent): Promise<void> {
       description: event.description,
       start: { dateTime: event.start.toISOString(), timeZone: event.timeZone },
       end: { dateTime: event.end.toISOString(), timeZone: event.timeZone },
-      attendees: [{ email: event.attendeeEmail }, { email: env.STYLIST_EMAIL }],
+      attendees: [event.attendeeEmail, process.env.STYLIST_EMAIL]
+        .filter((email) => email)
+        .map((email) => ({ email })),
       reminders: { useDefault: true },
     }),
   })
