@@ -7,6 +7,7 @@ export const HERO_VIDEOS = [
   `${MEDIA_BASE}/yazmine_videos/yazmine_2.mp4`,
   `${MEDIA_BASE}/yazmine_videos/yazmine_3.mp4`,
   `${MEDIA_BASE}/yazmine_videos/yazmine_4.mp4`,
+  `${MEDIA_BASE}/yazmine_videos/yazmine_5.mp4`,
 ] as const
 
 const GALLERY_PHOTO_FILES = [
