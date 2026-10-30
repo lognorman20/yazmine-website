@@ -1,22 +1,16 @@
 import { createContext, useContext } from 'react'
 import type { ProductId } from '../data/products'
-import type { CartLine, CheckoutStep, Customer, ShippingAddress } from './cart'
-
-export type Toast = { key: number; message: string }
+import type { Cart, CatalogState, DrawerState, SyncState } from './cart'
 
 export type CartContextValue = {
-  lines: CartLine[]
-  itemCount: number
-  subtotalCents: number
-  checkout: CheckoutStep
-  toast: Toast | null
+  catalog: CatalogState
+  cart: Cart | null
+  sync: SyncState
+  drawer: DrawerState
   addToBag: (id: ProductId) => void
-  setQuantity: (id: ProductId, quantity: number) => void
+  setQuantity: (lineId: string, quantity: number) => void
   openBag: () => void
-  goToDetails: () => void
-  closeCheckout: () => void
-  placeOrder: (customer: Customer, address: ShippingAddress) => void
-  dismissToast: () => void
+  closeBag: () => void
 }
 
 export const CartContext = createContext<CartContextValue | null>(null)

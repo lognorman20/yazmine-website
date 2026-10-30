@@ -62,11 +62,29 @@
   color: var(--text-primary);
 }
 
+.catalogError {
+  margin-top: calc(var(--space-md) * -1);
+  margin-bottom: var(--space-xl);
+  padding: var(--space-sm) var(--space-md);
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  border-left: 3px solid var(--accent);
+  background-color: var(--bg-primary);
+}
+
 .price {
   margin-top: var(--space-xs);
   font-size: 0.9375rem;
   font-weight: 500;
   color: var(--accent-hover);
+}
+
+.pricePlaceholder {
+  display: inline-block;
+  width: 4ch;
+  height: 1em;
+  vertical-align: middle;
+  background-color: var(--bg-primary);
 }
 
 .description {
@@ -93,7 +111,13 @@
   touch-action: manipulation;
 }
 
-.addButton:hover {
+.addButton:disabled {
+  color: var(--text-muted);
+  background-color: var(--bg-primary);
+  cursor: not-allowed;
+}
+
+.addButton:hover:not(:disabled) {
   background-color: var(--accent-hover);
 }
 

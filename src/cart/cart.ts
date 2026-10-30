@@ -1,106 +1,106 @@
-import { PRODUCTS_BY_ID, isProductId, type Product, type ProductId } from '../data/products'
-
-export type CartQuantities = Partial<Record<ProductId, number>>
-
-export type CartAction =
-  | { type: 'add'; id: ProductId }
-  | { type: 'setQuantity'; id: ProductId; quantity: number }
-  | { type: 'clear' }
-
-export type CartLine = { product: Product; quantity: number }
-
-export type Customer = { name: string; email: string }
-
-export type ShippingAddress = {
-  line1: string
-  line2?: string
-  city: string
-  state: string
-  zip: string
-}
-
-export type Order = {
-  id: string
-  lines: CartLine[]
-  subtotalCents: number
-  customer: Customer
-  address: ShippingAddress
-  placedAt: Date
-}
-
-export type CheckoutStep =
-  | { step: 'closed' }
-  | { step: 'bag' }
-  | { step: 'details' }
-  | { step: 'placed'; order: Order }
+import { PRODUCTS_BY_ID, isProductId, type Product, type ProductId } from '../data/products.ts'
 
 export const MAX_QUANTITY = 20
 
-const STORAGE_KEY = 'lby-cart'
+export type CatalogEntry = { variantId: string; priceCents: number; availableForSale: boolean }
 
-export function cartReducer(state: CartQuantities, action: CartAction): CartQuantities {
-  switch (action.type) {
-    case 'add':
-      return { ...state, [action.id]: Math.min((state[action.id] ?? 0) + 1, MAX_QUANTITY) }
-    case 'setQuantity': {
-      const { [action.id]: _removed, ...rest } = state
-      const quantity = Math.min(Math.floor(action.quantity), MAX_QUANTITY)
-      return quantity > 0 ? { ...rest, [action.id]: quantity } : rest
-    }
-    case 'clear':
-      return {}
+export type Catalog = Partial<Record<ProductId, CatalogEntry>>
+
+export type CartLine = { lineId: string; product: Product; quantity: number; lineTotalCents: number }
+
+export type Cart = {
+  id: string
+  checkoutUrl: string
+  totalQuantity: number
+  subtotalCents: number
+  lines: CartLine[]
+}
+
+export type CatalogState = { status: 'loading' } | { status: 'ready'; catalog: Catalog } | { status: 'error' }
+
+export type SyncState = { status: 'idle' } | { status: 'pending' } | { status: 'error'; message: string }
+
+export type DrawerState = 'closed' | 'bag'
+
+type Money = { amount: string }
+
+export type RawCart = {
+  id: string
+  checkoutUrl: string
+  totalQuantity: number
+  cost: { subtotalAmount: Money }
+  lines: {
+    nodes: {
+      id: string
+      quantity: number
+      cost: { totalAmount: Money }
+      merchandise: { id?: string; product?: { handle: string } }
+    }[]
   }
 }
 
-export function getCartLines(quantities: CartQuantities): CartLine[] {
-  return Object.entries(quantities).flatMap(([id, quantity]) =>
-    isProductId(id) && quantity ? [{ product: PRODUCTS_BY_ID[id], quantity }] : [],
-  )
+export type RawCatalog = {
+  products: {
+    nodes: {
+      handle: string
+      variants: { nodes: { id: string; availableForSale: boolean; price: Money }[] }
+    }[]
+  }
 }
 
-export function getSubtotalCents(lines: readonly CartLine[]) {
-  return lines.reduce((total, line) => total + line.product.priceCents * line.quantity, 0)
-}
-
-export function loadCart(): CartQuantities {
-  try {
-    const parsed: unknown = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}')
-    if (typeof parsed !== 'object' || parsed === null) return {}
-
-    const quantities: CartQuantities = {}
-    for (const [id, quantity] of Object.entries(parsed)) {
-      if (isProductId(id) && Number.isInteger(quantity) && quantity > 0) {
-        quantities[id] = Math.min(quantity, MAX_QUANTITY)
+export const CART_FRAGMENT = `
+  fragment CartFields on Cart {
+    id
+    checkoutUrl
+    totalQuantity
+    cost { subtotalAmount { amount } }
+    lines(first: 50) {
+      nodes {
+        id
+        quantity
+        cost { totalAmount { amount } }
+        merchandise { ... on ProductVariant { id product { handle } } }
       }
     }
-    return quantities
-  } catch {
-    return {}
   }
+`
+
+// MoneyV2.amount is a decimal string; rounding absorbs float error like 19.99 * 100.
+export function toCents(money: Money) {
+  return Math.round(Number(money.amount) * 100)
 }
 
-export function saveCart(quantities: CartQuantities) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(quantities))
-  } catch {
-    // Storage can be full or blocked (private mode); the in-memory cart still works.
-  }
-}
-
-const ORDER_ID_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-
-function createOrderId() {
-  const bytes = crypto.getRandomValues(new Uint8Array(6))
-  return `LBY-${Array.from(bytes, (byte) => ORDER_ID_ALPHABET[byte % ORDER_ID_ALPHABET.length]).join('')}`
-}
-
-export function createOrder(lines: CartLine[], customer: Customer, address: ShippingAddress): Order {
+export function parseCart(raw: RawCart): Cart {
   return {
-    id: createOrderId(),
-    lines,
-    subtotalCents: getSubtotalCents(lines),
-    customer,
-    address,
-    placedAt: new Date(),
+    id: raw.id,
+    checkoutUrl: raw.checkoutUrl,
+    totalQuantity: raw.totalQuantity,
+    subtotalCents: toCents(raw.cost.subtotalAmount),
+    lines: raw.lines.nodes.flatMap((line) => {
+      const handle = line.merchandise.product?.handle
+      if (!handle || !isProductId(handle)) return []
+      return [
+        {
+          lineId: line.id,
+          product: PRODUCTS_BY_ID[handle],
+          quantity: line.quantity,
+          lineTotalCents: toCents(line.cost.totalAmount),
+        },
+      ]
+    }),
   }
+}
+
+export function parseCatalog(raw: RawCatalog): Catalog {
+  const catalog: Catalog = {}
+  for (const product of raw.products.nodes) {
+    const variant = product.variants.nodes[0]
+    if (!variant || !isProductId(product.handle)) continue
+    catalog[product.handle] = {
+      variantId: variant.id,
+      priceCents: toCents(variant.price),
+      availableForSale: variant.availableForSale,
+    }
+  }
+  return catalog
 }

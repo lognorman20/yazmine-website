@@ -25,7 +25,8 @@ function BagIcon() {
 
 export default function Nav() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const { itemCount, openBag } = useCart()
+  const { cart, openBag } = useCart()
+  const itemCount = cart?.totalQuantity ?? 0
   const activeSection = useActiveSection(SECTION_IDS)
 
   useEffect(() => {

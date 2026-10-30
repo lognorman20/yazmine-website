@@ -13,7 +13,6 @@ export type Product = {
   name: string
   image: string
   description: string
-  priceCents: number
 }
 
 export const PRODUCTS: readonly Product[] = [
@@ -23,14 +22,12 @@ export const PRODUCTS: readonly Product[] = [
     image: `${PRODUCT_IMAGE_BASE}/rosemary-oil.jpg`,
     description:
       'Hand-blended oil with rosemary and fenugreek. Supports scalp health, stronger strands, and moisture on dry or brittle hair.',
-    priceCents: 2200,
   },
   {
     id: 'batana-butter',
     name: 'Batana Butter',
     image: `${PRODUCT_IMAGE_BASE}/batana.jpg`,
     description: 'Whipped batana butter for sealing moisture, softening locs, and protecting ends.',
-    priceCents: 2500,
   },
   {
     id: 'hydrating-mist',
@@ -38,28 +35,24 @@ export const PRODUCTS: readonly Product[] = [
     image: `${PRODUCT_IMAGE_BASE}/mist.jpg`,
     description:
       'Lightweight daily spray with rosemary, aloe, and lemongrass. Refreshes and moisturizes between wash days.',
-    priceCents: 1800,
   },
   {
     id: 'satin-bonnet',
     name: 'Satin Bonnet',
     image: `${PRODUCT_IMAGE_BASE}/satin-bonnet.jpg`,
     description: 'Roomy satin bonnet that protects curls, locs, and silk presses overnight.',
-    priceCents: 1500,
   },
   {
     id: 'long-braid-bonnet',
     name: 'Long Braid Bonnet',
     image: `${PRODUCT_IMAGE_BASE}/long-bonnet.jpg`,
     description: 'Extra-long satin bonnet with ties, sized for braids and long locs.',
-    priceCents: 2000,
   },
   {
     id: 'satin-durag',
     name: 'Satin Durag',
     image: `${PRODUCT_IMAGE_BASE}/durag.jpg`,
     description: 'Satin durag with long ties to hold waves and keep edges smooth.',
-    priceCents: 1200,
   },
 ]
 

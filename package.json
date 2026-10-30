@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "test": "node --test 'src/booking/*.test.ts'",
+    "test": "node --test 'src/booking/*.test.ts' 'src/cart/*.test.ts'",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -9,7 +9,6 @@ import Booking from './components/Booking'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import CartDrawer from './components/CartDrawer'
-import Toast from './components/Toast'
 import CartProvider from './cart/CartProvider'
 import styles from './App.module.css'
 
@@ -31,7 +30,6 @@ export default function App() {
         <Footer />
       </div>
       <CartDrawer />
-      <Toast />
     </CartProvider>
   )
 }
