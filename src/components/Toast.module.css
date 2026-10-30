@@ -2,8 +2,7 @@
   position: fixed;
   left: var(--space-md);
   right: var(--space-md);
-  /* Top on mobile so it never covers the full-height drawer's action buttons. */
-  top: calc(var(--space-sm) + env(safe-area-inset-top));
+  bottom: calc(var(--space-md) + env(safe-area-inset-bottom));
   z-index: 1100;
   pointer-events: none;
 }
@@ -51,7 +50,6 @@
   .region {
     left: var(--space-xl);
     right: auto;
-    top: auto;
     bottom: var(--space-xl);
     max-width: 420px;
   }

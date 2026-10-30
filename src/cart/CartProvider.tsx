@@ -33,7 +33,15 @@ export default function CartProvider({ children }: { children: ReactNode }) {
   }, [])
   const openBag = useCallback(() => setCheckout({ step: 'bag' }), [])
   const goToDetails = useCallback(() => setCheckout({ step: 'details' }), [])
-  const closeCheckout = useCallback(() => setCheckout({ step: 'closed' }), [])
+  const closeCheckout = useCallback(() => {
+    if (checkout.step === 'placed') {
+      setToast({
+        key: Date.now(),
+        message: `Order ${checkout.order.id} placed. Shipping is still being set up, so we'll email you before it ships.`,
+      })
+    }
+    setCheckout({ step: 'closed' })
+  }, [checkout])
   const dismissToast = useCallback(() => setToast(null), [])
 
   // Local only until Shopify's Storefront API backs checkout: no payment, no network.
@@ -42,10 +50,6 @@ export default function CartProvider({ children }: { children: ReactNode }) {
       const order = createOrder(lines, customer, address)
       dispatch({ type: 'clear' })
       setCheckout({ step: 'placed', order })
-      setToast({
-        key: Date.now(),
-        message: `Order ${order.id} placed. Shipping is still being set up, so we'll email you before it ships.`,
-      })
     },
     [lines],
   )

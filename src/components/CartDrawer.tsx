@@ -358,7 +358,7 @@ function PlacedStep({ order }: { order: Order }) {
         </section>
 
         <p className={styles.note}>
-          We'll email {order.customer.email} when your order ships.
+          Shipping is still being set up. We'll email {order.customer.email} before your order ships.
         </p>
       </div>
 
