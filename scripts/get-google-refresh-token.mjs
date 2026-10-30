@@ -1,6 +1,8 @@
-// One-time helper: prints a Google refresh token for the booking API.
-// Usage: GOOGLE_CLIENT_ID=... GOOGLE_CLIENT_SECRET=... node scripts/get-google-refresh-token.mjs
+// One-time helper: writes a Google refresh token for the booking API into .env.local.
+// Usage: put GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in .env.local, then
+//   node --env-file=.env.local scripts/get-google-refresh-token.mjs
 // The OAuth client must list http://localhost:53682/oauth2callback as an authorized redirect URI.
+import { readFileSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'
 
 const PORT = 53682
@@ -56,8 +58,12 @@ const server = createServer(async (req, res) => {
     console.error('Token exchange failed:', body.error, body.error_description ?? '')
     res.writeHead(500).end('Token exchange failed. See the terminal.')
   } else {
-    console.log('\nGOOGLE_REFRESH_TOKEN=' + body.refresh_token + '\n')
-    console.log('Add it to the Vercel project environment variables. Do not commit it.')
+    const envFile = '.env.local'
+    const kept = readFileSync(envFile, 'utf8')
+      .split('\n')
+      .filter((line) => line.trim() !== '' && !line.startsWith('GOOGLE_REFRESH_TOKEN='))
+    writeFileSync(envFile, [...kept, `GOOGLE_REFRESH_TOKEN=${body.refresh_token}`, ''].join('\n'))
+    console.log(`Saved GOOGLE_REFRESH_TOKEN to ${envFile}.`)
     res.writeHead(200, { 'Content-Type': 'text/plain' }).end('Done. You can close this tab.')
   }
   server.close()
