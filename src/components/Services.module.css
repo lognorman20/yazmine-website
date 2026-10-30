@@ -26,11 +26,11 @@
   display: flex;
   gap: var(--space-md);
   padding: var(--space-lg) 0;
-  border-top: 1px solid rgba(31, 26, 20, 0.12);
+  border-top: 1px solid rgba(17, 17, 17, 0.12);
 }
 
 .item:last-child {
-  border-bottom: 1px solid rgba(31, 26, 20, 0.12);
+  border-bottom: 1px solid rgba(17, 17, 17, 0.12);
 }
 
 .number {

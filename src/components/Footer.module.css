@@ -4,8 +4,8 @@
   align-items: center;
   gap: var(--space-md);
   padding: var(--space-xl) var(--section-padding-x);
-  background-color: var(--bg-warm);
-  border-top: 2px solid var(--accent-subtle);
+  background-color: var(--bg-ink);
+  border-top: 2px solid var(--brown);
 }
 
 .socialList {
@@ -25,13 +25,13 @@
   justify-content: center;
   width: 44px;
   height: 44px;
-  color: var(--accent);
+  color: var(--text-on-ink);
   transition: color var(--transition-fast);
   touch-action: manipulation;
 }
 
 .socialLink:hover {
-  color: var(--accent-hover);
+  color: var(--brown);
 }
 
 .icon {
@@ -41,22 +41,6 @@
 
 .copyright {
   font-size: 0.8125rem;
-  color: var(--text-muted);
+  color: color-mix(in srgb, var(--text-on-ink) 70%, transparent);
   text-align: center;
-}
-
-@media (min-width: 768px) {
-  .footer {
-    background-color: var(--bg-primary);
-    border-top-width: 1px;
-    border-top-color: var(--bg-secondary);
-  }
-
-  .socialLink {
-    color: var(--text-muted);
-  }
-
-  .socialLink:hover {
-    color: var(--accent);
-  }
 }

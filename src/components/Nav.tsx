@@ -12,7 +12,7 @@ const NAV_LINKS = [
   { label: 'Contact', href: '#contact' },
 ] as const
 
-const SECTION_IDS = ['#hero', ...NAV_LINKS.map((link) => link.href)] as const
+const SECTION_IDS = NAV_LINKS.map((link) => link.href)
 
 function BagIcon() {
   return (
@@ -51,10 +51,9 @@ export default function Nav() {
     <header className={styles.header}>
       <nav className={styles.nav} aria-label="Main navigation">
         <a
-          href="#hero"
-          className={`${styles.logo} ${activeSection === '#hero' ? styles.linkActive : ''}`}
+          href="#about"
+          className={styles.logo}
           onClick={handleNavClick}
-          aria-current={activeSection === '#hero' ? 'page' : undefined}
         >
           LusciousbyYazmine
         </a>

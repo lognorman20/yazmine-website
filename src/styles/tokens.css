@@ -1,13 +1,17 @@
 :root {
   /* Colors */
-  --bg-primary: #f7f3ed;
-  --bg-secondary: #eae4d9;
-  --bg-warm: #ede5d8;
-  --accent-subtle: rgba(184, 111, 61, 0.14);
-  --text-primary: #1f1a14;
-  --text-muted: #5c5347;
-  --accent: #b86f3d;
-  --accent-hover: #8b4f2a;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f3f0f6;
+  --bg-warm: #f5efe9;
+  --bg-ink: #111111;
+  --accent-subtle: rgba(123, 75, 160, 0.14);
+  --text-primary: #111111;
+  --text-muted: #4d4853;
+  --text-on-ink: #ffffff;
+  --accent: #7b4ba0;
+  --accent-hover: #5c3680;
+  --brown: #b86f3d;
+  --brown-hover: #8b4f2a;
 
   /* Typography */
   --font-display: 'Instrument Serif', 'Cormorant Garamond', Georgia, serif;

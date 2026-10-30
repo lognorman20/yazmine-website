@@ -19,8 +19,8 @@ export default function App() {
       <div className={styles.app}>
         <Nav />
         <main>
-          <Hero />
           <About />
+          <Hero />
           <Services />
           <Gallery />
           <Products />
