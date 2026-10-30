@@ -5,6 +5,7 @@ const ENV_KEYS = [
   'GOOGLE_CLIENT_SECRET',
   'GOOGLE_REFRESH_TOKEN',
   'GOOGLE_CALENDAR_ID',
+  'STYLIST_EMAIL',
 ] as const
 
 type GoogleEnv = Record<(typeof ENV_KEYS)[number], string>
@@ -81,7 +82,8 @@ export type NewEvent = {
 }
 
 export async function insertEvent(event: NewEvent): Promise<void> {
-  const calendarId = encodeURIComponent(readEnv().GOOGLE_CALENDAR_ID)
+  const env = readEnv()
+  const calendarId = encodeURIComponent(env.GOOGLE_CALENDAR_ID)
   await calendarRequest('Event insert', `/calendars/${calendarId}/events?sendUpdates=all`, {
     method: 'POST',
     body: JSON.stringify({
@@ -89,7 +91,7 @@ export async function insertEvent(event: NewEvent): Promise<void> {
       description: event.description,
       start: { dateTime: event.start.toISOString(), timeZone: event.timeZone },
       end: { dateTime: event.end.toISOString(), timeZone: event.timeZone },
-      attendees: [{ email: event.attendeeEmail }],
+      attendees: [{ email: event.attendeeEmail }, { email: env.STYLIST_EMAIL }],
       reminders: { useDefault: true },
     }),
   })
