@@ -113,7 +113,7 @@ export async function POST(request: Request): Promise<Response> {
     const deposit = demoDeposit(booking.service)
     const confirmed = { start: booking.start.toISOString(), end: end.toISOString(), deposit }
     // Previews confirm without booking anything until Google is connected.
-    if (!isGoogleConfigured()) return json(201, confirmed)
+    if (!isGoogleConfigured()) return json(201, { ...confirmed, invited: false })
 
     await insertEvent({
       summary: `${booking.service.name} · ${booking.name}`,
@@ -123,7 +123,7 @@ export async function POST(request: Request): Promise<Response> {
       timeZone: TIME_ZONE,
       attendeeEmail: booking.email,
     })
-    return json(201, confirmed)
+    return json(201, { ...confirmed, invited: true })
   } catch (error) {
     return serverError(error)
   }

@@ -19,7 +19,7 @@ type State =
   | { step: 'details'; service: BookableService; date: string; start: string; details?: Details }
   | { step: 'deposit'; service: BookableService; date: string; start: string; details: Details }
   | { step: 'submitting'; service: BookableService; date: string; start: string; details: Details }
-  | { step: 'confirmed'; service: BookableService; date: string; start: string; deposit: Deposit | null }
+  | { step: 'confirmed'; service: BookableService; date: string; start: string; deposit: Deposit | null; invited: boolean }
   | { step: 'error'; service: BookableService; date: string; start: string; details: Details; reason: FailureReason }
 
 type Action =
@@ -30,7 +30,7 @@ type Action =
   | { type: 'chooseTime'; start: string }
   | { type: 'submit'; details: Details }
   | { type: 'pay' }
-  | { type: 'booked'; deposit: Deposit | null }
+  | { type: 'booked'; deposit: Deposit | null; invited: boolean }
   | { type: 'slotTaken' }
   | { type: 'bookingFailed'; reason: FailureReason }
   | { type: 'retry' }
@@ -59,7 +59,14 @@ function reducer(state: State, action: Action): State {
       return state.step === 'deposit' ? { ...state, step: 'submitting' } : state
     case 'booked':
       return state.step === 'submitting'
-        ? { step: 'confirmed', service: state.service, date: state.date, start: state.start, deposit: action.deposit }
+        ? {
+            step: 'confirmed',
+            service: state.service,
+            date: state.date,
+            start: state.start,
+            deposit: action.deposit,
+            invited: action.invited,
+          }
         : state
     case 'slotTaken':
       return state.step === 'submitting'
@@ -149,8 +156,8 @@ async function postBooking(body: Record<string, string | boolean>): Promise<Acti
       body: JSON.stringify(body),
     })
     if (response.ok) {
-      const body = (await response.json()) as { deposit?: Deposit }
-      return { type: 'booked', deposit: body.deposit ?? null }
+      const body = (await response.json()) as { deposit?: Deposit; invited?: boolean }
+      return { type: 'booked', deposit: body.deposit ?? null, invited: body.invited ?? false }
     }
     if (response.status === 409) return { type: 'slotTaken' }
     if (response.status === 503) return { type: 'bookingFailed', reason: 'notConnected' }
@@ -465,13 +472,17 @@ export default function Booking() {
                 <div>
                   <dt>{state.deposit.demo ? 'Deposit (demo, not charged)' : 'Deposit paid'}</dt>
                   <dd>
-                    {formatPrice(state.deposit.amountCents)} · {formatPrice(state.service.priceCents - state.deposit.amountCents)}{' '}
-                    due at your appointment
+                    {formatPrice(state.deposit.amountCents)} now,{' '}
+                    {formatPrice(state.service.priceCents - state.deposit.amountCents)} at your appointment
                   </dd>
                 </div>
               )}
             </dl>
-            <p className={styles.confirmNote}>Check your email for the calendar invite.</p>
+            <p className={styles.confirmNote}>
+              {state.invited
+                ? 'Check your email for the calendar invite.'
+                : 'Demo booking: nothing was added to the calendar and no invite was sent.'}
+            </p>
             <button type="button" className={styles.secondary} onClick={() => dispatch({ type: 'restart' })}>
               Book another appointment
             </button>
