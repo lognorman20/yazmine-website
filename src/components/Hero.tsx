@@ -3,8 +3,6 @@ import { HERO_VIDEOS, HEADSHOT_SRC } from '../data/media'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 import styles from './Hero.module.css'
 
-const BOOKING_URL = 'https://lusciousbyyazmine.as.me/schedule/d8e29d20'
-
 export default function Hero() {
   const prefersReducedMotion = usePrefersReducedMotion()
   const [slotAIndex, setSlotAIndex] = useState(0)
@@ -89,12 +87,7 @@ export default function Hero() {
           LusciousbyYazmine
         </h1>
         <p className={styles.tagline}>Locs, braids &amp; natural hair · Brooklyn</p>
-        <a
-          href={BOOKING_URL}
-          className={styles.cta}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <a href="#book" className={styles.cta}>
           Book Now
         </a>
       </div>

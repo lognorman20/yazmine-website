@@ -8,12 +8,11 @@ const NAV_LINKS = [
   { label: 'Gallery', href: '#gallery' },
   { label: 'Products', href: '#products' },
   { label: 'Info', href: '#info' },
+  { label: 'Book', href: '#book' },
   { label: 'Contact', href: '#contact' },
 ] as const
 
 const SECTION_IDS = ['#hero', ...NAV_LINKS.map((link) => link.href)] as const
-
-const BOOKING_URL = 'https://lusciousbyyazmine.as.me/schedule/d8e29d20'
 
 export default function Nav() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -80,10 +79,8 @@ export default function Nav() {
           ))}
           <li>
             <a
-              href={BOOKING_URL}
+              href="#book"
               className={styles.bookButton}
-              target="_blank"
-              rel="noopener noreferrer"
               onClick={handleNavClick}
             >
               Book Now
