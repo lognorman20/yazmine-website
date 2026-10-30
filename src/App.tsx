@@ -8,23 +8,30 @@ import HoursAndPolicies from './components/HoursAndPolicies'
 import Booking from './components/Booking'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
+import CartDrawer from './components/CartDrawer'
+import Toast from './components/Toast'
+import CartProvider from './cart/CartProvider'
 import styles from './App.module.css'
 
 export default function App() {
   return (
-    <div className={styles.app}>
-      <Nav />
-      <main>
-        <Hero />
-        <About />
-        <Services />
-        <Gallery />
-        <Products />
-        <HoursAndPolicies />
-        <Booking />
-        <Contact />
-      </main>
-      <Footer />
-    </div>
+    <CartProvider>
+      <div className={styles.app}>
+        <Nav />
+        <main>
+          <Hero />
+          <About />
+          <Services />
+          <Gallery />
+          <Products />
+          <HoursAndPolicies />
+          <Booking />
+          <Contact />
+        </main>
+        <Footer />
+      </div>
+      <CartDrawer />
+      <Toast />
+    </CartProvider>
   )
 }
